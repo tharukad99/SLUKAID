@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
@@ -56,26 +56,56 @@ namespace FloodRelief.Api.Controllers
             return Ok(response);
         }
 
+        //private string GenerateJwtToken(Models.User user)
+        //{
+        //    var jwtSettings = _config.GetSection("Jwt");
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
+
+        //    var claims = new List<Claim>
+        //    {
+        //        new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+        //        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()), //  add this line
+        //        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        //        new Claim(ClaimTypes.Name, user.FullName),
+        //        new Claim(ClaimTypes.Role, user.Role),
+        //        new Claim("collectionPointId", user.CollectionPointId?.ToString() ?? string.Empty)
+        //    };
+
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        //    var expires = DateTime.UtcNow.AddMinutes(
+        //        double.Parse(jwtSettings["ExpiresMinutes"] ?? "60")
+        //    );
+
+        //    var token = new JwtSecurityToken(
+        //        issuer: jwtSettings["Issuer"],
+        //        audience: jwtSettings["Audience"],
+        //        claims: claims,
+        //        expires: expires,
+        //        signingCredentials: creds
+        //    );
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
+
+
         private string GenerateJwtToken(Models.User user)
         {
             var jwtSettings = _config.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]!));
 
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()), //  add this line
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim("collectionPointId", user.CollectionPointId?.ToString() ?? string.Empty)
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),   // 👈 important
+        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.FullName),
+        new Claim(ClaimTypes.Role, user.Role),                          // 👈 'Admin' or 'Collector'
+        new Claim("collectionPointId", user.CollectionPointId?.ToString() ?? string.Empty)
+    };
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var expires = DateTime.UtcNow.AddMinutes(
-                double.Parse(jwtSettings["ExpiresMinutes"] ?? "60")
-            );
+            var expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresMinutes"] ?? "60"));
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],
@@ -87,5 +117,10 @@ namespace FloodRelief.Api.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+
+
+
     }
 }

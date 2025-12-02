@@ -23,6 +23,22 @@ namespace FloodRelief.Api.Controllers
             _db = db;
         }
 
+
+        private string? GetUserRole() =>
+            User.FindFirstValue(ClaimTypes.Role);
+
+        private int? GetUserCollectionPointId()
+        {
+            var cpClaim = User.FindFirst("collectionPointId")?.Value;
+            return int.TryParse(cpClaim, out var id) ? id : (int?)null;
+        }
+
+
+
+
+
+
+
         // POST: api/Donations
         [HttpPost]
         [Authorize(Roles = "Admin,Collector")]
@@ -158,28 +174,92 @@ namespace FloodRelief.Api.Controllers
 
         // GET: api/Donations
         // Admin -> all; Collector -> only their collection point
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<DonationResponseDto>>> GetDonations(
+        //    [FromQuery] DateTime? from,
+        //    [FromQuery] DateTime? to,
+        //    [FromQuery] int? collectionPointId)
+        //{
+        //    var role = User.FindFirstValue(ClaimTypes.Role);
+        //    var cpClaim = User.FindFirst("collectionPointId")?.Value;
+        //    int? userCpId = null;
+        //    if (int.TryParse(cpClaim, out var cpParsed)) userCpId = cpParsed;
+
+        //    var query = _db.Donations
+        //        .Include(d => d.CollectionPoint)
+        //        .Include(d => d.CollectedByUser)
+        //        .AsQueryable();
+
+        //    if (role == "Collector" && userCpId != null)
+        //    {
+        //        query = query.Where(d => d.CollectionPointId == userCpId.Value);
+        //    }
+        //    else if (role == "Admin" && collectionPointId != null)
+        //    {
+        //        query = query.Where(d => d.CollectionPointId == collectionPointId.Value);
+        //    }
+
+        //    if (from != null)
+        //    {
+        //        query = query.Where(d => d.CollectedAt >= from.Value);
+        //    }
+
+        //    if (to != null)
+        //    {
+        //        query = query.Where(d => d.CollectedAt <= to.Value);
+        //    }
+
+        //    var list = await query
+        //        .OrderByDescending(d => d.CollectedAt)
+        //        .ToListAsync();
+
+        //    var result = list.Select(d => new DonationResponseDto
+        //    {
+        //        DonationId = d.DonationId,
+        //        DonorName = d.DonorName,
+        //        DonorEmail = d.DonorEmail,
+        //        DonorPhone = d.DonorPhone,
+        //        ItemDescription = d.ItemDescription,
+        //        Quantity = d.Quantity,
+        //        WeightKg = d.WeightKg,
+        //        CollectionPointId = d.CollectionPointId,
+        //        CollectionPointName = d.CollectionPoint.Name,
+        //        CollectedByUserId = d.CollectedByUserId,
+        //        CollectedByName = d.CollectedByUser.FullName,
+        //        CollectedAt = d.CollectedAt,
+        //        Notes = d.Notes
+        //    });
+
+        //    return Ok(result);
+        //}
+
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DonationResponseDto>>> GetDonations(
-            [FromQuery] DateTime? from,
-            [FromQuery] DateTime? to,
-            [FromQuery] int? collectionPointId)
+    [FromQuery] DateTime? from,
+    [FromQuery] DateTime? to,
+    [FromQuery] int? collectionPointId)   // Admin can still use this later
         {
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var cpClaim = User.FindFirst("collectionPointId")?.Value;
-            int? userCpId = null;
-            if (int.TryParse(cpClaim, out var cpParsed)) userCpId = cpParsed;
+            var role = GetUserRole();
+            var userCpId = GetUserCollectionPointId();
 
             var query = _db.Donations
                 .Include(d => d.CollectionPoint)
                 .Include(d => d.CollectedByUser)
                 .AsQueryable();
 
-            if (role == "Collector" && userCpId != null)
+            if (role == "Collector")
             {
+                // 🔴 Collector ALWAYS restricted by JWT collectionPointId
+                if (userCpId == null)
+                    return Forbid("Collector has no collection point assigned.");
+
                 query = query.Where(d => d.CollectionPointId == userCpId.Value);
             }
             else if (role == "Admin" && collectionPointId != null)
             {
+                // 🟢 Admin optionally filters via query param
                 query = query.Where(d => d.CollectionPointId == collectionPointId.Value);
             }
 
@@ -216,5 +296,7 @@ namespace FloodRelief.Api.Controllers
 
             return Ok(result);
         }
+
+
     }
 }
