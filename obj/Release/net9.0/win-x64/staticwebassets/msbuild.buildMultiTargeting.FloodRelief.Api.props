@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\FloodRelief.Api.props" />
+</Project>

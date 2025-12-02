@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "b1d5Ac5qy1OmBypOIqZu52HWUWmZN29+OJGTZA9O7Fk=",
+  "Source": "FloodRelief.Api",
+  "BasePath": "_content/FloodRelief.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
