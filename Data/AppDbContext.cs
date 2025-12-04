@@ -1,4 +1,4 @@
-using FloodRelief.Api.Models;
+﻿using FloodRelief.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FloodRelief.Api.Data
@@ -11,7 +11,10 @@ namespace FloodRelief.Api.Data
 		public DbSet<CollectionPoint> CollectionPoints => Set<CollectionPoint>();
 		public DbSet<Donation> Donations => Set<Donation>();
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        public DbSet<DonationFeedback> DonationFeedbacks { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
@@ -35,6 +38,48 @@ namespace FloodRelief.Api.Data
 				.HasOne(d => d.CollectedByUser)
 				.WithMany()
 				.HasForeignKey(d => d.CollectedByUserId);
-		}
-	}
+
+
+            //modelBuilder.Entity<DonationFeedback>();
+
+            modelBuilder.Entity<DonationFeedback>(entity =>
+            {
+                entity.ToTable("DonationFeedbacks");
+
+                entity.Property(f => f.FullName)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                entity.Property(f => f.Email)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+                entity.Property(f => f.Phone)
+                    .HasMaxLength(50);
+
+                entity.Property(f => f.AddressLine1)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(f => f.AddressLine2)
+                    .HasMaxLength(200);
+
+                entity.Property(f => f.Postcode)
+                    .IsRequired()
+                    .HasMaxLength(20);
+
+                entity.Property(f => f.ItemsDescription)
+                    .IsRequired();
+
+                entity.Property(f => f.CreatedDate)
+                    .IsRequired();
+            });
+
+
+
+
+
+        }
+
+    }
 }
