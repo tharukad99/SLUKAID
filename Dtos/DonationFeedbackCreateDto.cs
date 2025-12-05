@@ -11,5 +11,6 @@
 
         public string Postcode { get; set; } = null!;
         public string ItemsDescription { get; set; } = null!;
+        public decimal? WeightKg { get; set; }
     }
 }

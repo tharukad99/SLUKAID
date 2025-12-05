@@ -73,6 +73,8 @@ namespace FloodRelief.Api.Data
 
                 entity.Property(f => f.CreatedDate)
                     .IsRequired();
+                entity.Property(f => f.Weight)
+                    .IsRequired();
             });
 
 

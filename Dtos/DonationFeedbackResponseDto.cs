@@ -15,5 +15,7 @@
         public string ItemsDescription { get; set; } = null!;
 
         public DateTime CreatedDate { get; set; }
+
+        public decimal? WeightKg { get; set; }
     }
 }

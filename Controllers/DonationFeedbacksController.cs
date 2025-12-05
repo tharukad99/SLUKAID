@@ -58,7 +58,8 @@ namespace FloodRelief.Api.Controllers
                 AddressLine2 = dto.AddressLine2?.Trim(),
                 Postcode = dto.Postcode.Trim(),
                 ItemsDescription = dto.ItemsDescription.Trim(),
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                Weight = dto.WeightKg
             };
 
             _db.DonationFeedbacks.Add(entity);
@@ -75,7 +76,8 @@ namespace FloodRelief.Api.Controllers
                 AddressLine2 = entity.AddressLine2,
                 Postcode = entity.Postcode,
                 ItemsDescription = entity.ItemsDescription,
-                CreatedDate = entity.CreatedDate
+                CreatedDate = entity.CreatedDate,
+                WeightKg = entity.Weight
             };
 
             return CreatedAtAction(nameof(GetFeedbackById), new { id = entity.Id }, response);
@@ -102,7 +104,8 @@ namespace FloodRelief.Api.Controllers
                 AddressLine2 = feedback.AddressLine2,
                 Postcode = feedback.Postcode,
                 ItemsDescription = feedback.ItemsDescription,
-                CreatedDate = feedback.CreatedDate
+                CreatedDate = feedback.CreatedDate,
+                WeightKg = feedback.Weight
             };
 
             return Ok(dto);

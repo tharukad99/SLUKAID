@@ -16,5 +16,6 @@
         public string ItemsDescription { get; set; } = null!;
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public decimal? Weight { get; set; }
     }
 }
